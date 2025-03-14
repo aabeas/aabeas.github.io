@@ -1,4 +1,3 @@
-```markdown
 # aabeas.github.io
 
 Welcome to my personal website hosted on GitHub Pages.
@@ -24,4 +23,3 @@ You can reach me at [your-email@example.com](mailto:your-email@example.com).
 ## License
 
 This website is licensed under the [MIT License](LICENSE).
-```
