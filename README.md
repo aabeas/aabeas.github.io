@@ -1,5 +1,3 @@
-Here is a standard README.md for a personal website:
-
 ```markdown
 # aabeas.github.io
 
