@@ -1,0 +1,98 @@
+p {
+    font-family: Arial;
+    font-size: 1em;
+}
+
+.navbar {
+    margin-top: 15px;
+    background-color: #ffffff;
+    border-radius: 5px;
+}
+
+.navbar-brand {
+    font-family: Arial;
+    font-weight: 100;
+    font-size: 2.5em;
+    vertical-align: text-top;
+}
+
+body {
+    background-color: #ffffff;
+    font-family: "Arial Black", Helvetica, sans-serif;
+    font-size: 1em;
+    color: black;
+}
+
+@media (min-width:768px) .ml-md-n4 {
+    margin-left: calc(var(--base-size-24, 24px)*-1) !important;
+}
+
+@media (min-width:768px) .py-md-9 {
+    padding-bottom: var(--base-size-80, 80px) !important;
+    padding-top: var(--base-size-80, 80px) !important;
+}
+
+@media (min-width: 1012px) {
+    .p-responsive-home {
+        padding-left: 24px !important;
+        padding-right: 24px !important;
+    }
+}
+
+@media (min-width: 544px) {
+    .p-responsive-home {
+        padding-left: 40px !important;
+        padding-right: 40px !important;
+    }
+}
+
+.p-responsive-home {
+    padding-left: 24px !important;
+    padding-right: 24px !important;
+}
+
+@media (min-width:1012px) .h3-dgn {
+    font-size: 48px !important;
+    letter-spacing: -.03em;
+    line-height: 52px !important;
+}
+
+@media (min-width:768px) .h3-dgn {
+    font-size: 40px !important;
+    line-height: 44px !important;
+}
+
+.box-arrow {
+    display: inline-block;
+    overflow: visible !important;
+    vertical-align: text-bottom;
+    fill: currentColor;
+    height: auto;
+    width: auto;
+}
+
+.h3-dgn {
+    font-size: 28px !important;
+    font-weight: 800 !important;
+    line-height: 32px !important;
+}
+
+@media (min-width:768px) .f3-dsg {
+    font-size: 20px !important;
+    line-height: 28px !important;
+}
+
+.f3-dsg {
+    font-size: 16px !important;
+    line-height: 24px !important;
+}
+
+.f4-dsg {
+    font-size: 16px !important;
+    line-height: 24px !important;
+    font-weight: var(--base-text-weight-normal, 400);
+}
+
+@media (min-width:768px) .mb-md-4 {
+    margin-bottom: var(--base-size-24, 24px) !important;
+}
