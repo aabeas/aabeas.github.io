@@ -1,8 +1,41 @@
-p {
-    font-family: Arial;
-    font-size: 1em;
+/* Base styles */
+body {
+    background-color: #ffffff;
+    font-family: "Arial Black", Helvetica, sans-serif;
+    font-size: 1rem;
+    color: black;
+    line-height: 1.6;
+    letter-spacing: 0.02em;
 }
 
+a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.mt-4 {
+    margin-top: 1rem;
+}
+
+.mb-4 {
+    margin-bottom: 1rem;
+}
+
+.truncate-fixed {
+    height: 4.5rem; /* Adjust height as needed */
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Navbar styles */
 .navbar {
     margin-top: 15px;
     background-color: #ffffff;
@@ -10,89 +43,67 @@ p {
 }
 
 .navbar-brand {
-    font-family: Arial;
     font-weight: 100;
-    font-size: 2.5em;
+    font-size: 2rem;
     vertical-align: text-top;
 }
 
-body {
-    background-color: #ffffff;
-    font-family: "Arial Black", Helvetica, sans-serif;
-    font-size: 1em;
-    color: black;
-}
-
-@media (min-width:768px) .ml-md-n4 {
-    margin-left: calc(var(--base-size-24, 24px)*-1) !important;
-}
-
-@media (min-width:768px) .py-md-9 {
-    padding-bottom: var(--base-size-80, 80px) !important;
-    padding-top: var(--base-size-80, 80px) !important;
-}
-
-@media (min-width: 1012px) {
-    .p-responsive-home {
-        padding-left: 24px !important;
-        padding-right: 24px !important;
-    }
-}
-
-@media (min-width: 544px) {
-    .p-responsive-home {
-        padding-left: 40px !important;
-        padding-right: 40px !important;
-    }
+p {
+    font-family: "Arial", Helvetica, sans-serif;
+    /*font-weight: lighter;*/
+    font-size: .75rem;
 }
 
 .p-responsive-home {
-    padding-left: 24px !important;
-    padding-right: 24px !important;
+    padding-left: 24px;
+    padding-right: 24px;
 }
 
-@media (min-width:1012px) .h3-dgn {
-    font-size: 48px !important;
-    letter-spacing: -.03em;
-    line-height: 52px !important;
+/* Responsive styles for medium screens (544px and above) */
+@media (min-width: 544px) {
+    .p-responsive-home {
+        padding-left: 40px;
+        padding-right: 40px;
+    }
 }
 
-@media (min-width:768px) .h3-dgn {
-    font-size: 40px !important;
-    line-height: 44px !important;
-}
+/* Responsive styles for medium screens (768px and above) */
+@media (min-width: 768px) {
+    .ml-md-n4 {
+        margin-left: calc(var(--base-size-24, 24px) * -1);
+    }
 
-.box-arrow {
-    display: inline-block;
-    overflow: visible !important;
-    vertical-align: text-bottom;
-    fill: currentColor;
-    height: auto;
-    width: auto;
+    .py-md-9 {
+        padding-bottom: var(--base-size-80, 80px);
+        padding-top: var(--base-size-80, 80px);
+    }
+
+    .h3-dgn {
+        font-size: 40px;
+        line-height: 44px;
+    }
+
+    .f3-dsg {
+        font-size: 20px;
+        line-height: 28px;
+    }
+
+    .mb-md-4 {
+        margin-bottom: var(--base-size-24, 24px);
+    }
 }
 
 .h3-dgn {
-    font-size: 28px !important;
-    font-weight: 800 !important;
-    line-height: 32px !important;
+    font-size: 28px;
+    font-weight: 800;
+    line-height: 32px;
 }
 
-@media (min-width:768px) .f3-dsg {
-    font-size: 20px !important;
-    line-height: 28px !important;
-}
-
-.f3-dsg {
-    font-size: 16px !important;
-    line-height: 24px !important;
-}
-
-.f4-dsg {
-    font-size: 16px !important;
-    line-height: 24px !important;
-    font-weight: var(--base-text-weight-normal, 400);
-}
-
-@media (min-width:768px) .mb-md-4 {
-    margin-bottom: var(--base-size-24, 24px) !important;
+/* Responsive styles for medium screens (1012px and above) */
+@media (min-width: 1012px) {
+    .h3-dgn {
+        font-size: 48px;
+        letter-spacing: -0.03em;
+        line-height: 52px;
+    }
 }
