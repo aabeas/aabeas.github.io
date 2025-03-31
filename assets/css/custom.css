@@ -107,3 +107,35 @@ p {
         line-height: 52px;
     }
 }
+
+/* Blog Styles */
+.card:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transform: translateY(-5px);
+    transition: all 0.3s ease;
+}
+.blog-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1rem;
+}
+
+.blog-card {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 1rem;
+    background-color: #f9f9f9;
+}
+
+.blog-card h2 {
+    margin-top: 0;
+}
+
+.blog-card a {
+    text-decoration: none;
+    color: #007bff;
+}
+
+.blog-card a:hover {
+    text-decoration: underline;
+}
