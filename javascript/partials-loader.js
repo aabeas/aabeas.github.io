@@ -21,5 +21,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Load the header and footer
   loadPartial("#header", "/partials/header.html");
+  loadPartial("#carousel", "/partials/carousel.html");
   loadPartial("#footer", "/partials/footer.html");
 });
