@@ -1,6 +1,20 @@
-# aabeas.github.io
+<div align="center">
+  <picture>
+    <source srcset="assets/brand/aabeas-logo-dark.svg" media="(prefers-color-scheme: dark)">
+    <img src="assets/brand/aabeas-logo-light.svg" alt="Logo" width="100">
+  </picture>
+  </br>
+  <h1>aabeas</h1>
+</div>
 
-Welcome to my personal website.
+<h4 align="center">Welcome to my personal website.</h4>
+
+<p align="center">
+    <a href="#overview">Overview</a> •
+    <a href="#features">Features</a> •
+    <a href="#technology-used">Technology Used</a> •
+    <a href="#file-structure">File Structure</a>
+</p>
 
 ## Overview
 
