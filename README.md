@@ -12,7 +12,7 @@
 <p align="center">
     <a href="#overview">Overview</a> •
     <a href="#features">Features</a> •
-    <a href="#technology-used">Technology Used</a> •
+    <a href="#technologies-used">Technologies Used</a> •
     <a href="#file-structure">File Structure</a>
 </p>
 
