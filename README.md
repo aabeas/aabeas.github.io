@@ -37,21 +37,21 @@ This is the personal website for showcasing projects, interests, and blog posts.
 
 ## File Structure
 
-```
+```sh
 /aabeas.github.io/
 │
 ├── index.html          # Main homepage
 ├── partials/           # Reusable HTML components
 │   ├── header.html     # Header with navigation
 │   ├── footer.html     # Footer with links
-│   ├── carousel.html   # Carousel for homepage
+│   └── carousel.html   # Carousel for homepage
 ├── assets/             # Static assets
 │   ├── css/            # Custom CSS files
-│   │   ├── custom.css  # Custom styles
-│   ├── images/         # Images for carousel and site
+│   │   └── custom.css  # Custom styles
+│   └── images/         # Images for carousel and site
 ├── LICENSE             # MIT license
 ├── CITATIONS.md        # Citations for external code and assets
-├── README.md           # Project documentation
+└── README.md           # Project documentation
 ```
 
 ## Usage
