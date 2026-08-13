@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>
+      WeatherCrawler — a flash-test game for AWS deployments
+    </title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+      crossorigin="anonymous"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../assets/css/post.css" />
+  </head>
+  <body>
+    <div class="banner-title px-4 py-5">
+      <div class="py-5" style="max-width: 64vw; margin: auto">
+        <h1 class="display-5 fw-bold text-white mb-3">
+          WeatherCrawler — a flash-test game for AWS deployments
+        </h1>
+      </div>
+    </div>
+    <article>
+      <!-- Post Info Section -->
+      <div class="post-info mb-4">
+        <p class="text-muted mb-1">
+          <i class="bi bi-calendar"></i> <strong>Date Posted:</strong> August
+          13, 2026
+        </p>
+        <p class="text-muted mb-1">
+          <i class="bi bi-info-circle"></i> <strong>Description:</strong> A
+          single-file cloud-init script that stands up a tiny weather-driven
+          browser game on EC2 — built to quickly sanity-check AWS deployments,
+          and a look at what I'd tighten up before it sticks around.
+        </p>
+        <p class="text-muted">
+          <i class="bi bi-tags"></i> <strong>Topics:</strong> AWS, Bash,
+          Systems, Security
+        </p>
+      </div>
+      <hr class="my-4" />
+      <!-- Post Content -->
+      <p>
+        I needed a fast, disposable way to confirm an AWS deployment path
+        actually worked — instance launches, user-data runs, a service comes
+        up, port 80 answers. Rather than spin up a placeholder
+        "Hello World" page, I built something I'd actually enjoy poking at: a
+        tiny browser game called <strong>WeatherCrawler</strong> that pulls
+        real weather for wherever the instance happens to be running.
+      </p>
+      <p>
+        The whole thing is one <code>bash</code> script passed in as EC2
+        user-data. No provisioning tool, no image build step, no external
+        package beyond what <code>yum</code>/<code>apt</code> already know
+        about.
+      </p>
+
+      <h3>What it does</h3>
+      <p>On first boot, the script:</p>
+      <ol>
+        <li>
+          Installs <code>python3</code>, <code>curl</code>, and
+          <code>jq</code> — whichever package manager the AMI has.
+        </li>
+        <li>
+          Figures out where the instance actually is by resolving its public
+          IP and geolocating it:
+          <pre><code>PIP=$(curl -sf https://checkip.amazonaws.com)
+GEO=$(curl -sf "https://ipapi.co/${PIP}/json/")
+LAT=$(echo "$GEO" | jq -r '.latitude')
+LON=$(echo "$GEO" | jq -r '.longitude')</code></pre>
+          If either call fails — no egress, rate-limited, offline test
+          environment — it falls back to a small hardcoded list of cities and
+          picks one at random, so the script never blocks on a flaky network
+          call.
+        </li>
+        <li>
+          Pulls live conditions for that location from
+          <a href="https://open-meteo.com/" target="_blank" rel="noopener"
+            >Open-Meteo</a
+          >
+          (temperature, precipitation chance, cloud cover, wind speed) — no
+          API key required.
+        </li>
+        <li>
+          Writes two payloads to disk: a gzip+base64-encoded static HTML page
+          (the game itself) and a ~20-line stdlib-only Python HTTP server
+          that serves it.
+        </li>
+        <li>
+          Registers the server as a <code>systemd</code> unit so it survives
+          reboots and restarts on crash:
+          <pre><code>[Service]
+Type=simple
+ExecStart=/usr/bin/python3 /opt/wg/server.py
+WorkingDirectory=/opt/wg
+Restart=always
+RestartSec=5
+EnvironmentFile=/opt/wg/env</code></pre>
+        </li>
+        <li>Opens port 80 on the local firewall and starts the service.</li>
+      </ol>
+      <p>
+        The Python server has exactly two routes: <code>/</code> serves the
+        decompressed HTML, and <code>/weather</code> returns the
+        boot-time-fetched conditions for the instance's own geolocated city as
+        JSON, read out of environment variables the boot script set.
+      </p>
+      <p>
+        The game — a hex-grid crawler where you navigate from a start tile
+        to an exit, collecting coins — actually maps live weather onto the
+        board:
+      </p>
+      <ul>
+        <li>
+          <strong>Precipitation</strong> sets puddle density and slip chance
+          — step on a puddle in a downpour and you've got roughly even odds
+          of losing a turn.
+        </li>
+        <li>
+          <strong>Cloud cover</strong> shrinks your visible radius; dense
+          cloud plays like fog-of-war.
+        </li>
+        <li>
+          <strong>Temperature</strong> controls move speed (colder = slower
+          reactions), and below freezing, frost tiles spread across the board
+          over time.
+        </li>
+        <li>
+          <strong>Wind</strong> has a chance to randomly deflect your move to
+          an adjacent direction — the higher the speed, the higher the
+          chance.
+        </li>
+      </ul>
+      <p>
+        On load — and on every reset — the page picks a random city from its
+        own hardcoded list and fetches <em>current conditions for that
+        city</em> directly from Open-Meteo, in the browser, no server
+        involved. The EC2 instance's own geolocated weather (the
+        <code>/weather</code> endpoint above) is only used as a fallback if
+        that direct browser call times out. So the game you get is rarely
+        "wherever this EC2 instance happens to be" — it's a new city, and a
+        freshly generated board, almost every round.
+      </p>
+
+      <h3>Why this shape</h3>
+      <p>
+        The point wasn't the game — it was having something concrete and
+        fast to point at after a deploy. A single script that either produces
+        a working, checkably-alive port 80 endpoint or fails loudly in
+        <code>/var/log/wg-init.log</code> is a much better smoke test than
+        staring at "instance state: running" and hoping. It's also just more
+        fun to demo than a static "it works" page.
+      </p>
+
+      <h3>What I'd change before it sticks around</h3>
+      <p>
+        This was built for a quick, disposable check, and it shows. Before
+        I'd trust it as anything longer-lived than a demo:
+      </p>
+      <ul>
+        <li>
+          <strong>Don't run it as root.</strong> The systemd unit has no
+          <code>User=</code> directive, so the Python process — and anything
+          that ever went wrong in it — runs as root by default. A dedicated
+          service user costs one line.
+        </li>
+        <li>
+          <strong>The OS firewall isn't the real gate.</strong>
+          <code>firewall-cmd</code> opens port 80 locally, but the AWS
+          security group is the actual perimeter and this script doesn't
+          touch it. Worth calling out explicitly in any deploy doc so it's
+          not mistaken for "the port is handled."
+        </li>
+        <li>
+          <strong>No verification step.</strong> If <code>python3</code> is
+          missing on an unexpected AMI, or the service crash-loops, the only
+          signal is <code>systemctl status wg</code>. A final
+          <code>curl -sf http://localhost/weather</code> with a pass/fail
+          echo into the log would close that gap for free.
+        </li>
+        <li>
+          <strong>Base64-encoding the server script hurts editability.</strong>
+          It's compact, but every tweak means re-encoding. A heredoc — like
+          the one already used for the systemd unit — would be just as
+          self-contained and far easier to maintain.
+        </li>
+      </ul>
+
+      <h3>Could this run without a cloud provider? GitHub Pages, for instance</h3>
+      <p>
+        Almost trivially — closer than I expected. GitHub Pages only serves
+        static files, so there's no room for the Python
+        <code>/weather</code> endpoint or the server-side IP geolocation
+        step. But it turns out most of the game doesn't need either: it
+        already calls Open-Meteo directly from the browser for every city it
+        rolls, and the local <code>/weather</code> endpoint only exists as a
+        fallback for when that direct call fails. Drop that fallback branch
+        (it just degrades to hardcoded defaults if omitted, same as today),
+        pull the systemd unit and the Python server entirely, and push the
+        HTML to a <code>gh-pages</code> branch. The only real functionality
+        lost is opening on the <em>visitor's own</em> city rather than a
+        random one from the built-in list — a small, optional addition via
+        <code>navigator.geolocation</code> or a CORS-friendly IP-geo API, not
+        a rebuild. For a project whose entire surface area is one HTML file,
+        that's arguably a better fit than EC2 was in the first place —
+        unless the actual goal, like mine, was testing the AWS deployment
+        path itself.
+      </p>
+
+      <div class="row row-cols-1 row-cols-md-3 g-3 mt-4">
+        <!-- Previous Post -->
+        <div class="col text-center">
+          <a
+            href="working-with-ai-ephemeral.html"
+            class="btn btn-outline-primary w-100"
+          >
+            &larr; Previous Post
+          </a>
+        </div>
+
+        <!-- Back to Blog -->
+        <div class="col text-center">
+          <a href="../blog.html" class="btn btn-primary w-100">
+            Back to Blog
+          </a>
+        </div>
+
+        <!-- No Next Post -->
+        <div class="col text-center">
+          <span class="text-muted">No more posts</span>
+        </div>
+      </div>
+    </article>
+    <footer>
+      <p class="text-center text-body-secondary">
+        &copy; 2025 aabeas. All rights reserved.
+      </p>
+    </footer>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>
